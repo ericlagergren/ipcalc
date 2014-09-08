@@ -11,7 +11,7 @@ of the C modules socket and struct because it's faster or something.</p>
 
 <h2>Usage:</h2>
 ```shell
-./ipcalc.py [-s | -n] IPv4 address/CIDR prefix
+./ipcalc.py [-p | -n] IPv4 address/CIDR prefix
 ```
 
 Or just add ``--help`` for more information.
