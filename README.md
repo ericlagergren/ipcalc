@@ -8,9 +8,10 @@ ipcalc
 
 <h2>Usage:</h2>
 ```shell
+# Optional
 ln -s /usr/bin ipcalc.py
 
-ipcalc [-p | -n] IPv4 address/CIDR prefix
+ipcalc [-n HOSTS | -p COLORS] [IPv4 address]/[mask] [submask OPTIONAL]
 ```
 
 <h2>Example:</h2>
