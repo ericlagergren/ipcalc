@@ -1,5 +1,6 @@
 ipcalc
 ======
+<img>https://travis-ci.org/EricLagerg/ipcalc.svg?branch=master</img>
 
 <h2>This script is a subnetting calculator that mirrors *nix's ipcalc.</h2>
 
