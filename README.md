@@ -3,15 +3,45 @@ ipcalc
 
 <h2>This script is a subnetting calculator that mirrors *nix's ipcalc.</h2>
 
-<p>Originally it was all cool with some super awesome bit shifting but
-even though I actually got it to work I decided to drop that in favor
-of the C modules socket and struct because it's faster or something.</p>
+<p>This script allows you to perform IPv4 subnetting calculations.</p>
 
-<p>I miss my bit shifting :(</p>
 
 <h2>Usage:</h2>
 ```shell
-./ipcalc.py [-p | -n] IPv4 address/CIDR prefix
+ln -s /usr/bin ipcalc.py
+
+ipcalc [-p | -n] IPv4 address/CIDR prefix
+```
+
+<h2>Example:</h2>
+```shell
+eric@crunchbang ~/sbdmn/ipcalc $ ipcalc -n 250 192.168.0.0
+Address:   192.168.0.0
+Netmask:   255.255.255.0 = 24
+Wildcard:  0.0.0.255
+3232235520
+Class:     Class C (Private RFC1918)
+-->
+Network:   192.168.0.0/24
+HostMin:   192.168.0.0
+HostMax:   192.168.0.254
+Broadcast: 192.168.0.255
+Subnets:   256
+Hosts/Net: 254
+
+eric@crunchbang ~/sbdmn/ipcalc $ ipcalc 192.168.0.0/24
+Address:   192.168.0.0
+Netmask:   255.255.255.0 = 24
+Wildcard:  0.0.0.255
+3232235520
+Class:     Class C (Private RFC1918)
+-->
+Network:   192.168.0.0/24
+HostMin:   192.168.0.0
+HostMax:   192.168.0.254
+Broadcast: 192.168.0.255
+Subnets:   256
+Hosts/Net: 254
 ```
 
 Or just add ``--help`` for more information.

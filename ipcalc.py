@@ -19,10 +19,11 @@ import math
 import socket
 import struct
 
+
 def parse_args():
 
     prog = 'ipcalc'
-    usage = '{0} [-n NUMHOST | -s SUBMASK] [IPv4 address/mask]'.format(prog)
+    usage = '{0} [-n HOSTS | -p COLORS] [IPv4 address]/[mask] [submask OPTIONAL]'.format(prog)
     description = ('Subnetting Calculator'
                    '\n=====================\n'
                    'Takes both an IPv4 address and either a submask in CIDR '
@@ -34,10 +35,11 @@ def parse_args():
         '\tipcalc 192.168.0.1 24\n'
         '\tipcalc -n 192.168.0.1 250')
 
-    parser = argparse.ArgumentParser(usage=usage,
-                                     description=description,
-                                     epilog=epilogue,
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        usage=usage,
+        description=description,
+        epilog=epilogue,
+        formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument(
         'ip',
@@ -68,6 +70,7 @@ def parse_args():
 
     return args
 
+
 def main(*args):
 
     args = args[0]
@@ -89,7 +92,6 @@ def main(*args):
 
     big_int = struct.Struct('!I')
 
-
     def set_base(prefix, hosts):
         """
         Returns the 'base' which is an int which is <= 32 and >= 0
@@ -108,7 +110,6 @@ def main(*args):
                 base = set_bits_from_submask(prefix)
             return base
 
-
     def set_bits_from_host(num_hosts):
         """
         Returns base from number of desired hosts
@@ -118,7 +119,6 @@ def main(*args):
         if 0 is not num_hosts:
             num_hosts = MAX_BIT_INT - int(math.ceil(math.log(num_hosts, 2)))
         return num_hosts
-
 
     def set_bits_from_submask(submask):
         """
@@ -141,7 +141,6 @@ def main(*args):
         uint32_t += uint32_t >> 16
         return uint32_t & 0x0000003F
 
-
     def submask_from_set_bits(base):
         """
         Returns a subnetwork mask from the base
@@ -154,12 +153,17 @@ def main(*args):
                 '{0}CIDR prefix too large.\n{1}Must be <= 32, >= 0.'.format(
                     FAIL,
                     WARNING))
+        except TypeError:
+            quit(
+                '{0}CIDR prefix too small or non-existent.\n{1}Must be'
+                '<= 32, >= 0'.format(
+                    FAIL,
+                    WARNING))
         return '{0}.{1}.{2}.{3}'.format(
             mask >> 24 & MAX_BIT_BIN,
             mask >> 16 & MAX_BIT_BIN,
             mask >> 8 & MAX_BIT_BIN,
             mask & MAX_BIT_BIN)
-
 
     def wildcard(base):
         """
@@ -174,7 +178,6 @@ def main(*args):
             mask >> 8 & MAX_BIT_BIN,
             mask & MAX_BIT_BIN)
 
-
     def max_hosts(base):
         """
         Calculates max number of hosts network can support
@@ -185,7 +188,6 @@ def main(*args):
             base = 2 ** (MAX_BIT_INT - base)
         return base - 2
 
-
     def broadcast_addr(sm, ip):
         """
         Returns broadcast address of network
@@ -193,8 +195,8 @@ def main(*args):
         """
         bn = ip | (~sm & THIRTY_TWO_BITS)
         # To Do: Get this gross thing to work with struct and socket
-        return ".".join(map(lambda n: str(bn >> n & MAX_BIT_HEX), [24, 16, 8, 0]))
-
+        return ".".join(
+            map(lambda n: str(bn >> n & MAX_BIT_HEX), [24, 16, 8, 0]))
 
     def network_addr(sm, ip):
         """
@@ -204,7 +206,6 @@ def main(*args):
         bn = ip & sm
         return socket.inet_ntoa(big_int.pack(bn))
 
-
     def subnets(base):
         """
         Returns maximum number of available subnets
@@ -212,7 +213,6 @@ def main(*args):
         """
         mod_base = base % 8
         return 2 ** mod_base if mod_base else 2 ** 8
-
 
     def display_bits():
         """
@@ -229,21 +229,30 @@ def main(*args):
         """
         pass
 
-
     def ip_class(ip):
         """
         Returns class of IPv4 address
 
         """
-
-        if 0xC0000000 == ip & 0xC0000000:
-            return 'Class C'
-        elif 0x80000000 == ip & 0x80000000:
-            return 'Class B'
-        elif 0 == ip & 0x80000000:
+        print ip
+        if 167772160 <= ip <= 184549375:
+            return 'Class A (Private RFC1918)'
+        elif 0 <= ip <= 2147483647:
             return 'Class A'
+        elif 2886729728 <= ip <= 2886795263:
+            return 'Class B (Private RFC1918)'
+        elif 2147483648 <= ip <= 3221225471:
+            return 'Class B'
+        elif 3232235520 <= ip <= 3232301055:
+            return 'Class C (Private RFC1918)'
+        elif 3232235520 <= ip <= 3758096383:
+            return 'Class C'
+        elif 3758096384 <= ip <= 4026531839:
+            return 'Class D (Multicast)'
+        elif 4026531840 <= ip <= 4294967295:
+            return 'Class E (Reserved)'
         else:
-            return False
+            return 'UNKNOWN'
 
     # Set initial values
 
@@ -263,10 +272,11 @@ def main(*args):
     except socket.error:
         quit('{0}Invalid IPv4 address entered.'.format(FAIL))
 
-    SM_32_BIT = big_int.unpack(socket.inet_aton(submask_from_set_bits(base)))[0]
+    SM_32_BIT = big_int.unpack(
+        socket.inet_aton(
+            submask_from_set_bits(base)))[0]
 
     # Set values we'll be modifying
-    submask = submask_from_set_bits(base)
     network_address = network_addr(SM_32_BIT, IP_32_BIT)
     broadcast_address = broadcast_addr(SM_32_BIT, IP_32_BIT)
 
