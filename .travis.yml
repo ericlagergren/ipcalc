@@ -9,4 +9,4 @@ script:
  - python ipcalc.py -n 250 192.168.0.0
  - python ipcalc.py 192.168.0.0/24
  - python ipcalc.py -p 10.15.6.1/27
- - python ipcac.py 172.16.0.0 255.248.0.0
+ - python ipcalc.py 172.16.0.0 255.248.0.0
