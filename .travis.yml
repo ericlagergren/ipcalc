@@ -3,6 +3,11 @@ python:
  - "2.6"
  - "2.7"
 # command to run tests
+before_script:
+ - pip install argparse
+ - pip install math
+ - pip install socket
+ - pip install struct
 script:
  - python ipcalc.py -n 250 192.168.0.0
  - python ipcalc.py 192.168.0.0/24
