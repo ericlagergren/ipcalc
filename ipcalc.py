@@ -136,7 +136,7 @@ def main(*args):
         # http://books.google.com/books?id=iBNKMspIlqEC&pg=PA66#v=onepage&q&f=false
         uint32_t -= (uint32_t >> 1) & 0x55555555
         uint32_t = (uint32_t & 0x33333333) + ((uint32_t >> 2) & 0x33333333)
-        uint32_t += (uint32_t >> 4) & 0x0F0F0F0F
+        uint32_t = (uint32_t + (uint32_t >> 4)) & 0x0F0F0F0F
         uint32_t += uint32_t >> 8
         uint32_t += uint32_t >> 16
         return uint32_t & 0x0000003F
@@ -256,11 +256,13 @@ def main(*args):
 
     # Set initial values
 
-    ip_input = args.ip.split('/')[0]
+    primary_arg_list = args.ip.split('/')
+
+    ip_input = primary_arg_list[0]
     hosts_input = args.hosts
 
     try:
-        prefix_input = args.ip.split('/')[1]
+        prefix_input = primary_arg_list[1]
     except IndexError:
         prefix_input = args.prefix
 
